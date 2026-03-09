@@ -1,0 +1,41 @@
+from boto3 import resource
+
+from src.application.ports.output import RepositoryOutputPort
+
+
+class DynamoDBOutputAdapter(RepositoryOutputPort):
+    table = None
+
+    def __init__(self, table_name: str):
+        dynamodb = resource("dynamodb")
+        self.table = dynamodb.Table(table_name)
+
+    def create(self, attributes: dict) -> dict:
+        response = self.table.put_item(Item=attributes)
+        return response["Attributes"]
+    
+    def find_all(self) -> list[dict]:
+        response = self.table.scan()
+        return response["Items"]
+    
+    def find_by_id(self, id: str) -> dict | None:
+        response = self.table.get_item(Key={"id": id})
+        return response["Item"]
+    
+    def update(self, id: str, attributes: dict) -> dict:
+        update_expression = "SET "
+        expression_attributes = []
+        expression_attribute_values = {}
+        for key, value in attributes.items():
+            expression_attributes.append(f"{key} = :{key}")
+            expression_attribute_values[f":{key}"] = value
+        update_expression += ", ".join(expression_attributes)
+        response = self.table.update_item(
+            Key={"id": id},
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_attribute_values,
+        )
+        return response["Item"]
+    
+    def delete(self, id: str) -> None:
+        self.table.delete_item(Key={"id": id})
