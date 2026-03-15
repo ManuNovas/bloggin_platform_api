@@ -2,7 +2,6 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from src.domain.dtos import PostDto
-from src.domain.entities import Post
 from src.application.use_cases import BlogUseCases
 from src.adapters.output import DynamoDBOutputAdapter
 
@@ -80,7 +79,7 @@ class TestBlogUseCases(TestCase):
         self.assertEqual(result.category, CATEGORY)
         self.assertEqual(result.tags, TAGS)
         self.assertTrue(result.created_at is not None)
-        self.assertTrue(result.update_at is None)
+        self.assertTrue(result.updated_at is None)
 
     def test_list(self):
         TERM = None

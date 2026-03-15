@@ -63,7 +63,7 @@ class BlogUseCases(BlogInputPort):
         post.content = dto.content
         post.category = dto.category
         post.tags = dto.tags
-        post.update_at = datetime.now().isoformat()
+        post.updated_at = datetime.now().isoformat()
         entity = {}
         for key, value in post.__dict__.items():
             if key not in ["id"]:
