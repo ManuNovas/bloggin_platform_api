@@ -1,8 +1,8 @@
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.utilities.validation import validator, SchemaValidationError
 from aws_lambda_powertools.logging.logger import Logger
+from aws_lambda_powertools.utilities.validation import validate, SchemaValidationError
 from json import loads, dumps
 
+from src.adapters.input.schemas.post_schema import POST_BODY
 from src.domain.dtos import PostDto
 from src.application.ports.input import BlogInputPort
 
@@ -22,16 +22,14 @@ class BlogInputAdapter:
             "body": body
         }
     
-    def _handle_validation_error(self, exception):
-        return self._generate_response(400, exception)
-    
     def _handle_error(self, exception):
-        self.logger.error("An error ocurred", exception)
+        self.logger.error(exception)
         return self._generate_response(500, "Internal Server Error")
 
-    def create(self, event, context: LambdaContext):
+    def create(self, event):
         try:
             body = loads(event["body"])
+            validate(body, POST_BODY)
             dto = PostDto(
                 title=body["title"],
                 content=body["content"],
@@ -41,7 +39,7 @@ class BlogInputAdapter:
             post = self.input_port.create(dto)
             response = self._generate_response(201, dumps(post.__dict__))
         except SchemaValidationError as e:
-            response = self._handle_validation_error(e)
+            response = self._generate_response(400, e.validation_message)
         except Exception as e:
             response = self._handle_error(e)
         return response
