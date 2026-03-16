@@ -3,7 +3,6 @@ from aws_lambda_powertools.utilities.validation import validator, SchemaValidati
 from aws_lambda_powertools.logging.logger import Logger
 from json import loads, dumps
 
-from .schemas.post_schema import STORE
 from src.domain.dtos import PostDto
 from src.application.ports.input import BlogInputPort
 
@@ -16,7 +15,8 @@ class BlogInputAdapter:
         self.input_port = input_port
         self.logger = Logger(service="BlogInputAdapter")
 
-    def _generate_response(self, code: int, body) -> dict:
+    @staticmethod
+    def _generate_response(code: int, body) -> dict:
         return {
             "statusCode": code,
             "body": body

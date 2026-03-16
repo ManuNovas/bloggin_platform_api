@@ -16,7 +16,8 @@ class BlogUseCases(BlogInputPort):
         self.output_port = output_port
         self.logger = Logger(service="BlogUseCases")
 
-    def _from_dict_to_post(self, entity: dict) -> Post:
+    @staticmethod
+    def _from_dict_to_post(entity: dict) -> Post:
         return Post(
             id = entity["id"],
             title = entity["title"],
@@ -48,15 +49,15 @@ class BlogUseCases(BlogInputPort):
                 post = self._from_dict_to_post(entity)
                 posts.append(post)
         return posts
-    
-    def read(self, id: str) -> Post | None:
-        entity = self.output_port.find_by_id(id)
+
+    def read(self, post_id: str) -> Post | None:
+        entity = self.output_port.find_by_id(post_id)
         if entity is None:
             return None
         return self._from_dict_to_post(entity)
-    
-    def update(self, id: str, dto: PostDto) -> Post | None:
-        post = self.read(id)
+
+    def update(self, post_id: str, dto: PostDto) -> Post | None:
+        post = self.read(post_id)
         if post is None:
             return None
         post.title = dto.title
@@ -68,11 +69,11 @@ class BlogUseCases(BlogInputPort):
         for key, value in post.__dict__.items():
             if key not in ["id"]:
                 entity[key] = value
-        self.output_port.update(id, entity)
+        self.output_port.update(post_id, entity)
         return post
-    
-    def delete(self, id: str) -> None:
-        post = self.read(id)
+
+    def delete(self, post_id: str) -> None:
+        post = self.read(post_id)
         if post is not None:
-            self.output_port.delete(id)
-            self.logger.info(msg="Deleted post", extra={ post: post.__dict__ })
+            self.output_port.delete(post_id)
+            self.logger.info(post.__dict__)
