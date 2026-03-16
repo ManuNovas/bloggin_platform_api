@@ -9,11 +9,11 @@ from src.application.ports.output import RepositoryOutputPort
 
 
 class BlogUseCases(BlogInputPort):
-    outputPort: RepositoryOutputPort
+    output_port: RepositoryOutputPort
     logger: Logger
 
-    def __init__(self, outputPort: RepositoryOutputPort):
-        self.outputPort = outputPort
+    def __init__(self, output_port: RepositoryOutputPort):
+        self.output_port = output_port
         self.logger = Logger(service="BlogUseCases")
 
     def _from_dict_to_post(self, entity: dict) -> Post:
@@ -29,7 +29,7 @@ class BlogUseCases(BlogInputPort):
     
     def create(self, dto: PostDto) -> Post:
         post = Post(
-            id=uuid4(),
+            id=str(uuid4()),
             title=dto.title,
             content=dto.content,
             category=dto.category,
@@ -37,11 +37,11 @@ class BlogUseCases(BlogInputPort):
             created_at=datetime.now().isoformat(),
             updated_at=None
         )
-        self.outputPort.create(post.__dict__)
+        self.output_port.create(post.__dict__)
         return post
 
     def list(self, term: str | None) -> list[Post]:
-        entities = self.outputPort.find_all()
+        entities = self.output_port.find_all()
         posts = []
         for entity in entities:
             if term is None or term in entity["title"]:
@@ -50,7 +50,7 @@ class BlogUseCases(BlogInputPort):
         return posts
     
     def read(self, id: str) -> Post | None:
-        entity = self.outputPort.find_by_id(id)
+        entity = self.output_port.find_by_id(id)
         if entity is None:
             return None
         return self._from_dict_to_post(entity)
@@ -68,11 +68,11 @@ class BlogUseCases(BlogInputPort):
         for key, value in post.__dict__.items():
             if key not in ["id"]:
                 entity[key] = value
-        self.outputPort.update(id, entity)
+        self.output_port.update(id, entity)
         return post
     
     def delete(self, id: str) -> None:
         post = self.read(id)
         if post is not None:
-            self.outputPort.delete(id)
+            self.output_port.delete(id)
             self.logger.info(msg="Deleted post", extra={ post: post.__dict__ })

@@ -1,18 +1,21 @@
 from boto3 import resource
+from aws_lambda_powertools.logging import Logger
 
 from src.application.ports.output import RepositoryOutputPort
 
 
 class DynamoDBOutputAdapter(RepositoryOutputPort):
     table = None
+    logger: Logger
 
     def __init__(self, table_name: str):
         dynamodb = resource("dynamodb")
         self.table = dynamodb.Table(table_name)
+        self.logger = Logger(service="DynamoDBOutputAdapter")
 
-    def create(self, attributes: dict) -> dict:
+    def create(self, attributes: dict) -> bool:
         response = self.table.put_item(Item=attributes)
-        return response["Attributes"]
+        return response["ResponseMetadata"]["HTTPStatusCode"] == 200
     
     def find_all(self) -> list[dict]:
         response = self.table.scan()

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class RepositoryOutputPort(ABC):
     @abstractmethod
-    def create(self, attributes: dict) -> dict:
+    def create(self, attributes: dict) -> bool:
         pass
 
     @abstractmethod

@@ -1,0 +1,65 @@
+org: maneveil
+service: blogging-platform-api
+
+provider:
+  name: aws
+  runtime: python3.13
+  stage: dev
+  environment:
+    POSTS_TABLE_NAME: posts_${sls:stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:BatchWriteItem
+          Resource:
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.POSTS_TABLE_NAME}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.POSTS_TABLE_NAME}/index/*"
+
+resources:
+ Resources:
+  PostsDynamoDbTable:
+    Type: 'AWS::DynamoDB::Table'
+    DeletionPolicy: Retain
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      TableName: ${self:provider.environment.POSTS_TABLE_NAME}
+
+functions:
+  createPost:
+    handler: handlers/create_post.run
+    memorySize: 512
+    events:
+      - httpApi:
+          method: POST
+          path: /posts
+
+custom:
+  pythonRequirements:
+    slim: true
+    strip: true
+    noDeploy:
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - s3transfer
+
+package:
+  individually: true
+
+plugins:
+  - serverless-offline

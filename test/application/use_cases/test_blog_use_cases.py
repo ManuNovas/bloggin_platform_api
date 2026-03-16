@@ -81,15 +81,23 @@ class TestBlogUseCases(TestCase):
         self.assertTrue(result.created_at is not None)
         self.assertTrue(result.updated_at is None)
 
-    def test_list(self):
+    def test_list_without_term(self):
         TERM = None
         result = self.use_cases.list(TERM)
-        self.assertTrue(len(result) > 0)
+        self.assertTrue(len(result) == 2)
+        self.assertEqual(result[0].title, "Black magic in Final Fantasy")
+        self.assertEqual(result[1].title, "White magic in Final Fantasy")
+
+    def test_list_with_term(self):
+        TERM = "Black"
+        result = self.use_cases.list(TERM)
+        self.assertTrue(len(result) == 1)
+        self.assertEqual(result[0].title, "Black magic in Final Fantasy")
 
     def test_read(self):
         ID = "76331198-1b78-11f1-9535-00155da91917"
         result = self.use_cases.read(ID)
-        self.assertTrue(result is not None)
+        self.assertEqual(result.id, ID)
 
     def test_update(self):
         ID = "76331198-1b78-11f1-9535-00155da91917"
@@ -104,10 +112,15 @@ class TestBlogUseCases(TestCase):
             tags=TAGS
         )
         result = self.use_cases.update(ID, dto)
-        self.assertTrue(result is not None)
+        self.assertEqual(result.id, ID)
+        self.assertEqual(result.title, TITLE)
+        self.assertEqual(result.content, CONTENT)
+        self.assertEqual(result.category, CATEGORY)
+        self.assertEqual(result.tags, TAGS)
+        self.assertTrue(result.created_at is not None)
+        self.assertTrue(result.updated_at is not None)
 
     def test_delete(self):
         ID = "76331198-1b78-11f1-9535-00155da91917"
         result = self.use_cases.delete(ID)
         self.assertEqual(result, None)
-
