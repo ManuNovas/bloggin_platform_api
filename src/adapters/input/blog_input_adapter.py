@@ -19,7 +19,7 @@ class BlogInputAdapter:
     def _generate_response(code: int, body) -> dict:
         return {
             "statusCode": code,
-            "body": body
+            "body": dumps(body)
         }
     
     def _handle_error(self, exception):
@@ -37,9 +37,16 @@ class BlogInputAdapter:
                 tags=body["tags"],
             )
             post = self.input_port.create(dto)
-            response = self._generate_response(201, dumps(post.__dict__))
+            response = self._generate_response(201, post.__dict__)
         except SchemaValidationError as e:
             response = self._generate_response(400, e.validation_message)
         except Exception as e:
             response = self._handle_error(e)
         return response
+    
+    def get_all(self, event):
+        posts = self.input_port.list(None)
+        body = []
+        for post in posts:
+            body.append(post.__dict__)
+        return self._generate_response(200, body)

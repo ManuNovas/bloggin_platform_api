@@ -40,11 +40,18 @@ resources:
 
 functions:
   createPost:
-    handler: handlers/create_post.run
+    handler: handlers/posts.create
     memorySize: 512
     events:
       - httpApi:
           method: POST
+          path: /posts
+  getAllPosts:
+    handler: handlers/posts.get_all
+    memorySize: 512
+    events:
+      - httpApi:
+          method: GET
           path: /posts
 
 custom:
