@@ -53,6 +53,13 @@ functions:
       - httpApi:
           method: GET
           path: /posts
+  getOnePost:
+    handler: handlers/posts.get_one
+    memorySize: 512
+    events:
+      - httpApi:
+          method: GET
+          path: /posts/{id}
 
 custom:
   pythonRequirements:

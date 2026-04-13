@@ -2,7 +2,7 @@ from aws_lambda_powertools.logging.logger import Logger
 from aws_lambda_powertools.utilities.validation import validate, SchemaValidationError
 from json import loads, dumps
 
-from src.adapters.input.schemas.post_schema import POST_BODY
+from src.adapters.input.schemas.post_schema import POST_BODY, GET_ITEM
 from src.domain.dtos import PostDto
 from src.application.ports.input import BlogInputPort
 
@@ -50,3 +50,15 @@ class BlogInputAdapter:
         for post in posts:
             body.append(post.__dict__)
         return self._generate_response(200, body)
+
+    def get_one(self, event):
+        try:
+            path_parameters = loads(event["pathParameters"])
+            validate(path_parameters, GET_ITEM)
+            post = self.input_port.read(path_parameters["id"])
+            response = self._generate_response(200, post.__dict__)
+        except SchemaValidationError as e:
+            response = self._generate_response(400, e.validation_message)
+        except Exception as e:
+            response = self._handle_error(e)
+        return response
