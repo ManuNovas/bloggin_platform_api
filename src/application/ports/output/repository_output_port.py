@@ -15,7 +15,7 @@ class RepositoryOutputPort(ABC):
         pass
 
     @abstractmethod
-    def update(self, id: str, attributes: dict) -> dict:
+    def update(self, id: str, attributes: dict) -> bool:
         pass
 
     @abstractmethod

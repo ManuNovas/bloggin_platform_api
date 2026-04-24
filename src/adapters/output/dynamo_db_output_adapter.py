@@ -24,8 +24,8 @@ class DynamoDBOutputAdapter(RepositoryOutputPort):
     def find_by_id(self, id: str) -> dict | None:
         response = self.table.get_item(Key={"id": id})
         return response["Item"]
-    
-    def update(self, id: str, attributes: dict) -> dict:
+
+    def update(self, id: str, attributes: dict) -> bool:
         update_expression = "SET "
         expression_attributes = []
         expression_attribute_values = {}
@@ -38,7 +38,7 @@ class DynamoDBOutputAdapter(RepositoryOutputPort):
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values,
         )
-        return response["Item"]
+        return response["ResponseMetadata"]["HTTPStatusCode"] == 200
     
     def delete(self, id: str) -> None:
         self.table.delete_item(Key={"id": id})

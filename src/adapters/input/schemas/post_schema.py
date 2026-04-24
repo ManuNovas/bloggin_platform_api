@@ -1,27 +1,29 @@
+POST_PROPERTIES = {
+    "title": {
+        "type": "string",
+        "maxLength": 128
+    },
+    "content": {
+        "type": "string",
+    },
+    "category": {
+        "type": "string",
+        "maxLength": 64
+    },
+    "tags": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "maxLength": 32
+        }
+    }
+}
+
 POST_BODY = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "type": "object",
     "required": ["title", "content", "category", "tags"],
-    "properties": {
-        "title": {
-            "type": "string",
-            "maxLength": 128
-        },
-        "content": {
-            "type": "string",
-        },
-        "category": {
-            "type": "string",
-            "maxLength": 64
-        },
-        "tags": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "maxLength": 32
-            }
-        }
-    }
+    "properties": POST_PROPERTIES,
 }
 
 GET_ITEM = {
@@ -30,7 +32,6 @@ GET_ITEM = {
     "properties": {
         "id": {
             "type": "string",
-            "format": "uuid",
         },
     },
 }
@@ -55,4 +56,23 @@ LIST = {
             "maxLength": 128
         }
     }
+}
+
+UPDATE_ITEM = {
+    "type": "object",
+    "required": ["pathParameters", "body"],
+    "properties": {
+        "pathParameters": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                },
+            },
+        },
+        "body": {
+            "type": "object",
+            "properties": POST_PROPERTIES,
+        },
+    },
 }

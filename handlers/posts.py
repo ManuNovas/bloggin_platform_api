@@ -15,6 +15,9 @@ def create(event, context):
 def get_all(event, context):
     return input_adapter.get_all(event)
 
-
 def get_one(event, context):
     return input_adapter.get_one(event)
+
+
+def update(event, context):
+    return input_adapter.update(event)

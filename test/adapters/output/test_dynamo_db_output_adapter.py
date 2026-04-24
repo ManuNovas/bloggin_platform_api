@@ -76,7 +76,9 @@ class TestDynamoDBOutputAdapter(TestCase):
             "updatedAt": "2026-03-09T06:03:41+00:00",
         }
         self.adapter.table.update_item = MagicMock(return_value={
-            "Item": item,
+            "ResponseMetadata": {
+                "HTTPStatusCode": 200,
+            },
         })
         dto = {
             "title": "Black magic in Final Fantasy",
@@ -85,7 +87,7 @@ class TestDynamoDBOutputAdapter(TestCase):
             "tags": ["Final Fantasy", "Black Magic", "Spells"],
         }
         result = self.adapter.update("76331198-1b78-11f1-9535-00155da91917", dto)
-        self.assertEqual(result, item)
+        self.assertEqual(result, True)
 
     def test_delete(self):
         self.adapter.table.delete_item = MagicMock(return_value={})

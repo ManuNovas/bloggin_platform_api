@@ -2,7 +2,7 @@ from json import dumps
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from domain.entities import Post
+from src.domain.entities import Post
 from src.adapters.output import DynamoDBOutputAdapter
 from src.application.use_cases import BlogUseCases
 from src.adapters.input import BlogInputAdapter

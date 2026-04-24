@@ -60,6 +60,13 @@ functions:
       - httpApi:
           method: GET
           path: /posts/{id}
+  updatePost:
+    handler: handlers/posts.update
+    memorySize: 512
+    events:
+      - httpApi:
+          method: PUT
+          path: /posts/{id}
 
 custom:
   pythonRequirements:
