@@ -19,12 +19,18 @@ class BlogInputAdapter:
     def _generate_response(code: int, body) -> dict:
         return {
             "statusCode": code,
+            "headers": {
+                "Content-Type": "application/json",
+            },
             "body": dumps(body)
         }
     
     def _handle_error(self, exception):
         self.logger.error(exception)
         return self._generate_response(500, "Internal Server Error")
+    
+    def _post_not_found(self):
+        return self._generate_response(404, "Post doesn't exists.")
 
     def create(self, event):
         try:
@@ -56,7 +62,7 @@ class BlogInputAdapter:
             path_parameters = event["pathParameters"]
             validate(path_parameters, SINGLE_ITEM)
             post = self.input_port.read(path_parameters["id"])
-            response = self._generate_response(200, post.__dict__)
+            response = self._generate_response(200, post.__dict__) if post is not None else self._post_not_found()
         except SchemaValidationError as e:
             response = self._generate_response(400, e.validation_message)
         except Exception as e:
@@ -75,7 +81,7 @@ class BlogInputAdapter:
                 tags=event["body"]["tags"],
             )
             post = self.input_port.update(post_id, dto)
-            response = self._generate_response(200, post.__dict__)
+            response = self._generate_response(200, post.__dict__) if post is not None else self._post_not_found()
         except SchemaValidationError as e:
             response = self._generate_response(400, e.validation_message)
         except Exception as e:

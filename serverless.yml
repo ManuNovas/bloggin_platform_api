@@ -3,7 +3,7 @@ service: blogging-platform-api
 
 provider:
   name: aws
-  runtime: python3.13
+  runtime: python3.12
   stage: dev
   environment:
     POSTS_TABLE_NAME: posts_${sls:stage}

@@ -19,11 +19,11 @@ class DynamoDBOutputAdapter(RepositoryOutputPort):
     
     def find_all(self) -> list[dict]:
         response = self.table.scan()
-        return response["Items"]
+        return response["Items"] if "Items" in response else []
     
     def find_by_id(self, id: str) -> dict | None:
         response = self.table.get_item(Key={"id": id})
-        return response["Item"]
+        return response["Item"] if "Item" in response else None
 
     def update(self, id: str, attributes: dict) -> bool:
         update_expression = "SET "
