@@ -26,7 +26,7 @@ POST_BODY = {
     "properties": POST_PROPERTIES,
 }
 
-GET_ITEM = {
+SINGLE_ITEM = {
     "type": "object",
     "required": ["id"],
     "properties": {

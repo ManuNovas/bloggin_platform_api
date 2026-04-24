@@ -2,7 +2,7 @@ from aws_lambda_powertools.logging.logger import Logger
 from aws_lambda_powertools.utilities.validation import validate, SchemaValidationError
 from json import loads, dumps
 
-from src.adapters.input.schemas.post_schema import POST_BODY, GET_ITEM, UPDATE_ITEM
+from src.adapters.input.schemas.post_schema import POST_BODY, SINGLE_ITEM, UPDATE_ITEM
 from src.domain.dtos import PostDto
 from src.application.ports.input import BlogInputPort
 
@@ -54,7 +54,7 @@ class BlogInputAdapter:
     def get_one(self, event):
         try:
             path_parameters = event["pathParameters"]
-            validate(path_parameters, GET_ITEM)
+            validate(path_parameters, SINGLE_ITEM)
             post = self.input_port.read(path_parameters["id"])
             response = self._generate_response(200, post.__dict__)
         except SchemaValidationError as e:
@@ -76,6 +76,18 @@ class BlogInputAdapter:
             )
             post = self.input_port.update(post_id, dto)
             response = self._generate_response(200, post.__dict__)
+        except SchemaValidationError as e:
+            response = self._generate_response(400, e.validation_message)
+        except Exception as e:
+            response = self._handle_error(e)
+        return response
+
+    def delete(self, event):
+        try:
+            path_parameters = event["pathParameters"]
+            validate(path_parameters, SINGLE_ITEM)
+            self.input_port.delete(path_parameters["id"])
+            response = self._generate_response(204, {})
         except SchemaValidationError as e:
             response = self._generate_response(400, e.validation_message)
         except Exception as e:

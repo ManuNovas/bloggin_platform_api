@@ -21,3 +21,7 @@ def get_one(event, context):
 
 def update(event, context):
     return input_adapter.update(event)
+
+
+def delete(event, context):
+    return input_adapter.delete(event)
