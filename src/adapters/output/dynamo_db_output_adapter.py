@@ -1,5 +1,6 @@
 from boto3 import resource
 from aws_lambda_powertools.logging import Logger
+from boto3.dynamodb.conditions import Attr
 
 from src.application.ports.output import RepositoryOutputPort
 
@@ -16,9 +17,12 @@ class DynamoDBOutputAdapter(RepositoryOutputPort):
     def create(self, attributes: dict) -> bool:
         response = self.table.put_item(Item=attributes)
         return response["ResponseMetadata"]["HTTPStatusCode"] == 200
-    
-    def find_all(self) -> list[dict]:
-        response = self.table.scan()
+
+    def find_all(self, term: str | None = None) -> list[dict]:
+        response = self.table.scan() if term is None else self.table.scan(
+            FilterExpression=Attr("title").contains(term) | Attr("content").contains(term) | Attr("category").contains(
+                term) | Attr("tags").contains(term)
+        )
         return response["Items"] if "Items" in response else []
     
     def find_by_id(self, id: str) -> dict | None:

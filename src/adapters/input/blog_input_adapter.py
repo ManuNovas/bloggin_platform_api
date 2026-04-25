@@ -51,7 +51,9 @@ class BlogInputAdapter:
         return response
     
     def get_all(self, event):
-        posts = self.input_port.list(None)
+        query_string_parameters = event.get("queryStringParameters") or {}
+        term = query_string_parameters["term"] if "term" in query_string_parameters else None
+        posts = self.input_port.list(term)
         body = []
         for post in posts:
             body.append(post.__dict__)

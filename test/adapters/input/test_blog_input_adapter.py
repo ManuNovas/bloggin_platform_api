@@ -38,6 +38,9 @@ class TestInputAdapter(TestCase):
         })
         self.assertEqual(result, {
             "statusCode": 201,
+            "headers": {
+                "Content-Type": "application/json",
+            },
             "body": dumps({
                 "id": "d7ab9666-2108-11f1-b3b8-00155d366223",
                 "title": "Black magic in Final Fantasy",
@@ -53,6 +56,9 @@ class TestInputAdapter(TestCase):
         result = self.adapter.get_all(None)
         self.assertEqual(result, {
             "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json",
+            },
             "body": dumps([
                 {
                     "id": "d7ab9666-2108-11f1-b3b8-00155d366223",

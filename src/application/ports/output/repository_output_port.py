@@ -7,7 +7,7 @@ class RepositoryOutputPort(ABC):
         pass
 
     @abstractmethod
-    def find_all(self) -> list[dict]:
+    def find_all(self, term: str | None = None) -> list[dict]:
         pass
 
     @abstractmethod

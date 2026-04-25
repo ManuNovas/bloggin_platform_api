@@ -82,15 +82,26 @@ class TestBlogUseCases(TestCase):
         self.assertTrue(result.updated_at is None)
 
     def test_list_without_term(self):
-        TERM = None
-        result = self.use_cases.list(TERM)
+        term = None
+        result = self.use_cases.list(term)
         self.assertTrue(len(result) == 2)
         self.assertEqual(result[0].title, "Black magic in Final Fantasy")
         self.assertEqual(result[1].title, "White magic in Final Fantasy")
 
     def test_list_with_term(self):
-        TERM = "Black"
-        result = self.use_cases.list(TERM)
+        term = "Black"
+        self.use_cases.output_port.find_all = MagicMock(return_value=[
+            {
+                "id": "76331198-1b78-11f1-9535-00155da91917",
+                "title": "Black magic in Final Fantasy",
+                "content": "This post explains the black magic spells in Final Fantasy",
+                "category": "Black Magic",
+                "tags": ["Final Fantasy", "Black Magic", "Spells"],
+                "created_at": "2026-03-09T05:28:21+00:00",
+                "updated_at": None
+            },
+        ])
+        result = self.use_cases.list(term)
         self.assertTrue(len(result) == 1)
         self.assertEqual(result[0].title, "Black magic in Final Fantasy")
 

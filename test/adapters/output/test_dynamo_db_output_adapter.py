@@ -25,7 +25,7 @@ class TestDynamoDBOutputAdapter(TestCase):
         result = self.adapter.create(dto)
         self.assertTrue(result)
 
-    def test_find_all(self):
+    def test_find_all_without_term(self):
         items = [
             {
                 "id": "76331198-1b78-11f1-9535-00155da91917",
@@ -48,6 +48,23 @@ class TestDynamoDBOutputAdapter(TestCase):
             "Items": items,
         })
         result = self.adapter.find_all()
+        self.assertEqual(result, items)
+
+    def test_find_all_with_term(self):
+        items = [
+            {
+                "id": "76331198-1b78-11f1-9535-00155da91917",
+                "title": "Black magic in Final Fantasy",
+                "content": "This post explains the black magic spells in Final Fantasy",
+                "category": "Black Magic",
+                "tags": ["Final Fantasy", "Black Magic", "Spells"],
+                "createdAt": "2026-03-09T05:28:21+00:00",
+            },
+        ]
+        self.adapter.table.scan = MagicMock(return_value={
+            "Items": items,
+        })
+        result = self.adapter.find_all("black")
         self.assertEqual(result, items)
 
     def test_find_by_id(self):

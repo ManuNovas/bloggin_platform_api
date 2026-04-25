@@ -42,12 +42,11 @@ class BlogUseCases(BlogInputPort):
         return post
 
     def list(self, term: str | None) -> list[Post]:
-        entities = self.output_port.find_all()
+        entities = self.output_port.find_all(term)
         posts = []
         for entity in entities:
-            if term is None or term in entity["title"]:
-                post = self._from_dict_to_post(entity)
-                posts.append(post)
+            post = self._from_dict_to_post(entity)
+            posts.append(post)
         return posts
 
     def read(self, post_id: str) -> Post | None:
